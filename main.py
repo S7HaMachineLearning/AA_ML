@@ -25,7 +25,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 # Available in Scikit-Learn version 1.2+
 from sklearn.metrics import RocCurveDisplay
 
-df = pd.read_csv(r"data\heart-disease.csv")
+df = pd.read_csv("data/heart-disease.csv")
 
 # Split data into X and y
 X = df.drop("target", axis=1)
