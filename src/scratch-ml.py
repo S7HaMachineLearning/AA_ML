@@ -12,16 +12,6 @@ from keras.layers import Embedding, LSTM, Dense
 import numpy as np
 
 
-class ML:
-    """ML class"""
-
-    def __init__(self, name):
-        self.name = name
-
-    def greet(self):
-        print(f"Hello, {self.name}!")
-
-
 def process_automations(file):
     with open(file, 'r') as stream:
         data_loaded = yaml.safe_load(stream)

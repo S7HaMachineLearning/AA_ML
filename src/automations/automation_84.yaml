@@ -1,4 +1,4 @@
-alias: "Turn off the porch light at sunrise if it's on"
+alias: "Turn off the porch light at sunrise if it"s on"
 trigger:
   platform: sun
   event: sunrise
