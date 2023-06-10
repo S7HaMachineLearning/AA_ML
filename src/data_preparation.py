@@ -3,7 +3,7 @@ import os
 import yaml
 import re
 from sklearn.preprocessing import LabelEncoder
-
+from database_handler import DatabaseHandler
 
 # This class will be used to prepare data for the machine learning model.
 class DataPreparation:
@@ -167,5 +167,11 @@ class DataPreparation:
                 file_automations = self.process_automations(file)
                 self.automations.extend(file_automations)
 
-        print(self.preprocess_data())
+        encoded_platforms, encoded_conditions, encoded_services = self.preprocess_data()
+        print(encoded_platforms, encoded_conditions, encoded_services)
+
+        db_handler = DatabaseHandler('automations.db')
+        db_handler.create_database()
+        db_handler.store_data(encoded_platforms, encoded_conditions, encoded_services)
+
         print(self.feature_engineering())

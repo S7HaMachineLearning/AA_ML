@@ -3,7 +3,8 @@
 
 from enum import Enum
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
-
+from typing import Optional
+from typing import Optional, List, Dict, Any
 
 class SensorType(Enum):  # pylint: disable=too-few-public-methods
     """Enum for sensor types."""
@@ -28,8 +29,15 @@ class NewSensor(BaseModel):  # pylint: disable=too-few-public-methods
     haSensorId: str
     type: int
 
+
 class HaSensor(BaseModel):  # pylint: disable=too-few-public-methods
     """Home assistant sensor model."""
     entityId: str
     friendlyName: str
     state: str
+
+
+class Automation(BaseModel):
+    triggers: Optional[List[Dict[str, Any]]] = None
+    conditions: Optional[List[Dict[str, Any]]] = None
+    actions: Optional[List[Dict[str, Any]]] = None
