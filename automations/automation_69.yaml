@@ -1,0 +1,13 @@
+action:
+- service: light.turn_off
+  target:
+    entity_id: light.bedroom
+alias: Turn off the bedroom lights when the alarm is disarmed
+condition:
+- condition: state
+  entity_id: light.bedroom
+  state: 'on'
+trigger:
+  entity_id: alarm_control_panel.home_alarm
+  platform: state
+  to: disarmed

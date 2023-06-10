@@ -1,0 +1,9 @@
+action:
+- service: light.turn_on
+  target:
+    entity_id: light.garage
+alias: Turn on the garage lights when the garage door is opened
+trigger:
+  entity_id: cover.garage_door
+  platform: state
+  to: open

@@ -1,0 +1,18 @@
+action:
+- data:
+    message: The washing machine has finished.
+  service: notify.notify
+- service: switch.turn_off
+  target:
+    entity_id: switch.washing_machine
+alias: Notify when the washing machine has finished
+condition:
+  condition: state
+  entity_id: switch.washing_machine
+  state: 'on'
+trigger:
+  entity_id: sensor.washing_machine_power
+  for:
+    minutes: 2
+  platform: state
+  to: '0'

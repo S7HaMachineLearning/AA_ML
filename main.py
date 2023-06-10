@@ -1,129 +1,55 @@
-# Import all the tools
-# pip install numpy pandas seaborn matplotlib scikit-learn pip-tools
-# export requirements.txt = pip freeze > requirements.txt
-# or pipreqs . --force
+# This is the entry point for FastAPI application.
+# It will create the FastAPI application instance and include the routers from the api module.
 
-# Regular EDA (exploratory data analysis) and plotting libraries
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+from routers import automations
+from json import JSONDecodeError
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from database import DatabaseConnector
+import myclass
+import models
 
-# Models from Scikit-Learn
-from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.ensemble import RandomForestClassifier
+# Create database connector for local DB
+databaseConnector = DatabaseConnector("database.db")
 
-# Model Evaluations
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
-from sklearn.metrics import confusion_matrix, classification_report
-from sklearn.metrics import precision_score, recall_score, f1_score
-
-# this will error in Scikit-Learn version 1.2+
-# from sklearn.metrics import plot_roc_curve
-# Available in Scikit-Learn version 1.2+
-from sklearn.metrics import RocCurveDisplay
-
-df = pd.read_csv("data/heart-disease.csv")
-
-# Split data into X and y
-X = df.drop("target", axis=1)
-
-y = df["target"]
-
-# Split data into train and test sets
-np.random.seed(42)
-
-# Split into train & test set
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-# Put models in a dictionary
-models = {"Logistic Regression": LogisticRegression(n_jobs=-1, max_iter=1000),
-          "KNN": KNeighborsClassifier(n_jobs=-1),
-          "Random Forest": RandomForestClassifier(n_jobs=-1)}
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-# Create a function to fit and score models
-def fit_and_score(models, X_train, X_test, y_train, y_test):
-    """
-    Fits and evaluates given machine learning models.
-    models : a dict of differetn Scikit-Learn machine learning models
-    X_train : training data (no labels)
-    X_test : testing data (no labels)
-    y_train : training labels
-    y_test : test labels
-    """
-    # Set random seed
-    np.random.seed(42)
-    # Make a dictionary to keep model scores
-    model_scores = {}
-    # Loop through models
-    for name, model in models.items():
-        # Fit the model to the data
-        model.fit(X_train, y_train)
-        # Evaluate the model and append its score to model_scores
-        model_scores[name] = model.score(X_test, y_test)
-    return model_scores
+## API ENDPOINTS ##
 
+@app.post("/process_automations")
+def process_automations(automation: Automation):
+    directory = automation.directory
+    automations = []
 
-model_scores = fit_and_score(models=models, X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
+    correct_yaml_files(directory)
 
-# Create a hyperparameter grid for LogisticRegression
-log_reg_grid = {"C": np.logspace(-4, 4, 20),
-                "solver": ["liblinear"]}
+    for filename in os.listdir(directory):
+        if filename.endswith(".yaml"):
+            file = os.path.join(directory, filename)
+            file_automations = process_automations(file)
+            automations.extend(file_automations)
 
-# Create a hyperparameter grid for RandomForestClassifier
-rf_grid = {"n_estimators": np.arange(10, 1000, 50),
-           "max_depth": [None, 3, 5, 10],
-           "min_samples_split": np.arange(2, 20, 2),
-           "min_samples_leaf": np.arange(1, 20, 2)}
+    return {"message": "Automations processed successfully"}
 
-# Tune LogisticRegression
-np.random.seed(42)
+@app.post("/preprocess_data")
+def preprocess_data(automations: list):
+    encoded_platforms, encoded_conditions, encoded_services = prepocess_data(automations)
+    return {"encoded_platforms": encoded_platforms, "encoded_conditions": encoded_conditions, "encoded_services": encoded_services}
 
-# Setup random hyperparameter search for LogisticRegression
-rs_log_reg = RandomizedSearchCV(LogisticRegression(),
-                                param_distributions=log_reg_grid,
-                                cv=5,
-                                n_iter=20,
-                                n_jobs=-1,
-                                verbose=True)
+@app.post("/feature_engineering")
+def feature_engineering(automations: list):
+    num_triggers, num_conditions, num_actions, has_state_trigger, has_sunrise_trigger = feature_engineering(automations)
+    return {"num_triggers": num_triggers, "num_conditions": num_conditions, "num_actions": num_actions, "has_state_trigger": has_state_trigger, "has_sunrise_trigger": has_sunrise_trigger}
 
-# Fit random hyperparameter search model for LogisticRegression
-rs_log_reg.fit(X_train, y_train)
-
-# Er is ook een ingebouwde functie om de hyperparameters terug te geven die de hoogtste score heeft
-rs_log_reg.best_params_
-
-# test op de test data
-rs_log_reg.score(X_test, y_test)
-
-# Setup random seed
-np.random.seed(42)
-
-# Setup random hyperparameter search for RandomForestClassifier
-rs_rf = RandomizedSearchCV(RandomForestClassifier(),
-                           param_distributions=rf_grid,
-                           cv=5,
-                           n_iter=20,
-                           n_jobs=-1,
-                           verbose=True)
-
-# Fit random hyperparameter search model for RandomForestClassifier()
-rs_rf.fit(X_train, y_train)
-
-# Andere hyperparameters voor het LogisticRegression model
-log_reg_grid = {"C": np.logspace(-4, 4, 30),
-                "solver": ["liblinear"]}
-
-# Configuratie grid hyperparameter search voor LogisticRegression
-gs_log_reg = GridSearchCV(LogisticRegression(),
-                          param_grid=log_reg_grid,
-                          cv=5,
-                          n_jobs=-1,
-                          verbose=True)
-
-# Pas grid toe op hyperparameter search model
-gs_log_reg.fit(X_train, y_train)
-
+@app.post("/data_modeling")
+def data_modeling(automations: list):
+    automation = data_modeling(automations)
+    return {"automation": automation}

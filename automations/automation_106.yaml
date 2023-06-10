@@ -1,0 +1,13 @@
+action:
+- service: light.turn_off
+  target:
+    entity_id: light.living_room
+alias: Turn off the living room lights when the TV is turned off
+condition:
+- condition: state
+  entity_id: light.living_room
+  state: 'on'
+trigger:
+  entity_id: media_player.living_room_tv
+  platform: state
+  to: 'off'

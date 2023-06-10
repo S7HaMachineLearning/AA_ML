@@ -1,0 +1,9 @@
+action:
+- data:
+    message: The front door has been closed.
+  service: notify.notify
+alias: Send a notification when the front door is closed
+trigger:
+  entity_id: binary_sensor.front_door
+  platform: state
+  to: 'off'

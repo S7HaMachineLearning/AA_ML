@@ -1,0 +1,13 @@
+action:
+- service: light.turn_on
+  target:
+    entity_id: light.hallway
+alias: Turn on the hallway lights when motion is detected
+condition:
+  after: sunset
+  before: sunrise
+  condition: sun
+trigger:
+  entity_id: binary_sensor.hallway_motion
+  platform: state
+  to: 'on'

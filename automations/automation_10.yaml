@@ -1,0 +1,9 @@
+action:
+- service: light.turn_off
+  target:
+    entity_id: light.example_light
+alias: Turn off lights when person leaves the house
+trigger:
+  entity_id: person.example_person
+  platform: state
+  to: not_home

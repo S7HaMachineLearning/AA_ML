@@ -1,0 +1,13 @@
+action:
+- service: light.turn_off
+  target:
+    entity_id: light.hallway
+alias: Turn off the hallway lights when the front door is closed
+condition:
+- condition: state
+  entity_id: light.hallway
+  state: 'on'
+trigger:
+  entity_id: binary_sensor.front_door
+  platform: state
+  to: 'off'

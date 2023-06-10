@@ -1,0 +1,13 @@
+action:
+- service: light.turn_on
+  target:
+    entity_id: group.hallway_lights
+alias: Turn on the hallway lights when the front door is opened during nighttime
+condition:
+  after: sunset
+  before: sunrise
+  condition: sun
+trigger:
+  entity_id: binary_sensor.front_door
+  platform: state
+  to: 'on'

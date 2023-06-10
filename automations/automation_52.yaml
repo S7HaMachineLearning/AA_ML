@@ -1,0 +1,20 @@
+action:
+- choose:
+  - conditions:
+    - condition: state
+      entity_id: sun.sun
+      state: below_horizon
+    sequence:
+    - service: light.turn_on
+      target:
+        entity_id: light.garden
+  default:
+  - service: light.turn_off
+    target:
+      entity_id: light.garden
+alias: Turn on the garden lights at sunset and turn them off at sunrise
+trigger:
+- event: sunset
+  platform: sun
+- event: sunrise
+  platform: sun

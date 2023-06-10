@@ -1,0 +1,15 @@
+action:
+- service: light.turn_off
+  target:
+    entity_id: light.living_room
+alias: Turn off the living room lights when no motion is detected for 10 minutes
+condition:
+- condition: state
+  entity_id: light.living_room
+  state: 'on'
+trigger:
+  entity_id: binary_sensor.living_room_motion
+  for:
+    minutes: 10
+  platform: state
+  to: 'off'
