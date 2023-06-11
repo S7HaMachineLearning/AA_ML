@@ -1,0 +1,12 @@
+action:
+- service: light.turn_on
+  target:
+    entity_id: light.example_light
+alias: Turn on lights when person comes home and sun is under - Automation 5
+condition:
+- before: sunset
+  condition: sun
+trigger:
+  entity_id: person.example_person
+  platform: state
+  to: home
