@@ -114,11 +114,11 @@ class DataPreparation:
                         data = stream.read()
                         # Ensure that the quotes in the alias line are matched correctly
                         corrected_data = re.sub(r'alias:\s*"([^"]*)\'', r'alias: "\1"', data)
-                        with open(file, 'w') as output_stream:
+                        with open(file, 'w', encoding="utf-8") as output_stream:
                             output_stream.write(corrected_data)
                         print(f"File '{filename}' corrected.")
-                    except Exception as ImportError:
-                        print(f"Error in file '{filename}': {ImportError}")
+                    except Exception as import_error:
+                        print(f"Error in file '{filename}': {import_error}")
 
     # This method will be used to process the automations in the directory.
     def preprocess_data(self):

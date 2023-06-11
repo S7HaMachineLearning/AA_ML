@@ -1,8 +1,8 @@
 """Models for the application."""
 
 from enum import Enum
-from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from typing import Optional, List, Dict, Any  # pylint: disable=no-name-in-module
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 
 class SensorType(Enum):  # pylint: disable=too-few-public-methods

@@ -44,7 +44,7 @@ async def train_model(automation: models.Automation):
     processed_data = data_prep.process_automations(automation.dict())
 
     # Train the machine learning model
-    ml_model.train_model(processed_data)
+    ml_model.data_modeling(processed_data)
 
     # Save the trained model
     ml_model.save_model("model.h5")

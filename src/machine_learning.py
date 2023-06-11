@@ -1,8 +1,8 @@
 """ A module for machine learning"""
 import json
 import pickle
+from datetime import time
 import numpy as np
-from datetime import datetime
 from keras.preprocessing.text import Tokenizer
 from keras.utils import pad_sequences
 from keras.models import Sequential
@@ -23,7 +23,7 @@ class MachineLearning:
         """A custom JSON encoder"""
 
         def default(self, object):
-            if isinstance(object, datetime.time):
+            if isinstance(object, time):
                 return object.strftime('%H:%M:%S')
             return super().default(object)
 
@@ -44,7 +44,7 @@ class MachineLearning:
             pickle.dump(self.tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # method to model the data and save the model
-    def data_modeling(self):
+    def data_modeling(self, automations):
         """# Convert your automations into strings"""
         # automation_strings = [json.dumps(automation, cls=CustomJSONEncoder) for automation in automations]
         # Add the '<end>' token to the end of each automation string
@@ -64,8 +64,8 @@ class MachineLearning:
         sequences = pad_sequences(sequences, padding='post')
 
         # Create your input and target sequences
-        X = sequences[:, :-1]
-        y = sequences[:, 1:]
+        x_axis = sequences[:, :-1]
+        y_axis = sequences[:, 1:]
 
         # Define the model
         model = Sequential()
@@ -77,10 +77,10 @@ class MachineLearning:
         model.compile(loss='sparse_categorical_crossentropy', optimizer='adam')
 
         # Reshape y to be 3-dimensional, as the model expects
-        y_reshaped = y.reshape(*y.shape, 1)
+        y_reshaped = y_axis.reshape(*y_axis.shape, 1)
 
         # Train the model
-        model.fit(X, y_reshaped, epochs=10, validation_split=0.2)
+        model.fit(x_axis, y_reshaped, epochs=10, validation_split=0.2)
         model.save('model.h5')
 
         max_length = 16

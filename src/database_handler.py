@@ -1,56 +1,44 @@
-"""Database service"""
 import sqlite3
+from typing import List, Dict, Any
 
 
 class DatabaseHandler:
-    """Database service"""
-    def __init__(self, db_name):
+    def __init__(self, db_name: str):
         self.db_name = db_name
+        self.cursor: sqlite3.Cursor = None  # Add type hint for 'cursor'
 
-    # Create the database if it doesn't exist
     def create_database(self):
-        """# Connect to the SQLite database (it will be created if it doesn't exist)"""
         conn = sqlite3.connect(self.db_name)
+        self.cursor = conn.cursor()
 
-        # Create a cursor object
-        cursor = conn.cursor()
-
-        # Create table
-        cursor.execute('''
+        self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS automations
             (platforms TEXT, conditions TEXT, services TEXT)
         ''')
 
-        # Commit the changes and close the connection
         conn.commit()
         conn.close()
 
-    # Store the data in the database
-    def store_data(self, encoded_platforms, encoded_conditions, encoded_services):
-        """# Convert the numpy arrays to lists and then to strings"""
+    def store_data(self, encoded_platforms: List[Any], encoded_conditions: List[Any], encoded_services: List[Any]):
         platforms_str = str(encoded_platforms.tolist())
         conditions_str = str(encoded_conditions.tolist())
         services_str = str(encoded_services.tolist())
 
-        # Connect to the SQLite database
         conn = sqlite3.connect(self.db_name)
+        self.cursor = conn.cursor()
 
-        # Create a cursor object
-        cursor = conn.cursor()
-
-        # Insert data into the table
-        cursor.execute('''
+        self.cursor.execute('''
             INSERT INTO automations (platforms, conditions, services)
             VALUES (?, ?, ?)
         ''', (platforms_str, conditions_str, services_str))
 
-        # Commit the changes and close the connection
         conn.commit()
         conn.close()
 
-    # Get the data from the database
-    def get_automation_by_id(self, automation_id):
-        """# Connect to the SQLite database"""
+    def get_automation_by_id(self, automation_id) -> Dict[str, Any]:
+        conn = sqlite3.connect(self.db_name)
+        self.cursor = conn.cursor()
+
         query = "SELECT * FROM automations WHERE id = ? AND deleted = 0"
         self.cursor.execute(query, (automation_id,))
         result = self.cursor.fetchone()
@@ -67,22 +55,16 @@ class DatabaseHandler:
             "deleted": result[5]
         }
 
-        return automation.values()
+        return automation
 
-    # Get all the data from the database
-    def save_to_database(self, processed_data):
-        """# Connect to the SQLite database"""
+    def save_to_database(self, processed_data: List[Any]):
         conn = sqlite3.connect(self.db_name)
+        self.cursor = conn.cursor()
 
-        # Create a cursor object
-        cursor = conn.cursor()
-
-        # Insert data into the table
-        cursor.execute('''
+        self.cursor.execute('''
             INSERT INTO automations (platforms, conditions, services)
             VALUES (?, ?, ?)
         ''', (processed_data[0], processed_data[1], processed_data[2]))
 
-        # Commit the changes and close the connection
         conn.commit()
         conn.close()
