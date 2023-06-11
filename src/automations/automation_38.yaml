@@ -1,0 +1,11 @@
+action:
+- service: light.turn_off
+  target:
+    entity_id: light.kitchen
+alias: Turn off the kitchen lights when no motion is detected for 10 minutes
+trigger:
+  entity_id: binary_sensor.kitchen_motion
+  for:
+    minutes: 10
+  platform: state
+  to: 'off'

@@ -1,0 +1,11 @@
+action:
+- data:
+    message: The front door has been open for more than 5 minutes.
+  service: notify.notify
+alias: Notify when the front door is left open for more than 5 minutes
+trigger:
+  entity_id: binary_sensor.front_door
+  for:
+    minutes: 5
+  platform: state
+  to: 'on'

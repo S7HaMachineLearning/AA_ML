@@ -1,0 +1,11 @@
+action:
+- service: switch.turn_off
+  target:
+    entity_id: switch.coffee_machine
+alias: Turn off the coffee machine after 30 minutes
+trigger:
+  entity_id: switch.coffee_machine
+  for:
+    minutes: 30
+  platform: state
+  to: 'on'

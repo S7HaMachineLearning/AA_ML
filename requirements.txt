@@ -1,5 +1,8 @@
-matplotlib==3.7.1
-numpy==1.24.3
-pandas==2.0.1
-scikit_learn==1.2.2
-seaborn==0.12.2
+fastapi~=0.96.0
+uvicorn
+pylint
+pydantic~=1.10.8
+PyYAML~=6.0
+numpy~=1.23.5
+scikit-learn~=1.2.2
+keras~=2.12.0

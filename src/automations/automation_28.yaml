@@ -1,0 +1,9 @@
+action:
+- service: lock.lock
+  target:
+    entity_id: lock.front_door
+alias: Lock the front door when everyone leaves the house
+trigger:
+  entity_id: group.all_devices
+  platform: state
+  to: not_home

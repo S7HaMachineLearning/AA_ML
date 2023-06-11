@@ -1,0 +1,15 @@
+action:
+- service: switch.turn_off
+  target:
+    entity_id: switch.home_cinema_power
+alias: Turn off home cinema devices when no motion is detected for 30 minutes
+condition:
+  condition: state
+  entity_id: switch.home_cinema_power
+  state: 'on'
+trigger:
+  entity_id: binary_sensor.shed_attic_motion
+  for:
+    minutes: 30
+  platform: state
+  to: 'off'

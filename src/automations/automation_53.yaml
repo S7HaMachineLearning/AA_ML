@@ -1,0 +1,15 @@
+action:
+- data:
+    hvac_mode: 'off'
+  service: climate.set_hvac_mode
+  target:
+    entity_id: climate.air_conditioner
+alias: Turn off the air conditioner when the window is opened
+condition:
+- condition: state
+  entity_id: climate.air_conditioner
+  state: cool
+trigger:
+  entity_id: binary_sensor.window
+  platform: state
+  to: 'on'
