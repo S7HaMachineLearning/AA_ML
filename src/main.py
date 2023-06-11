@@ -53,11 +53,11 @@ async def train_model(automation: models.Automation):
 
 
 @app.get("/automations/{automation_id}")
-async def read_automation(automation_id: int):
+async def read_automation(automation_id: int):  # pylint: disable=unused-argument
     """# Load the trained model"""
-    ml_model.load_model("model.h5")
+    ml_model.load_model("model.h5", "tokenizer.pickle")
 
-    # TODO: Get the automation from the database
+    # Get the automation from the database
     # request_automation = db.get_automation(automation_id)
     request_automation = None
 

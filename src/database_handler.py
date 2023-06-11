@@ -10,6 +10,7 @@ class DatabaseHandler:
         self.cursor: sqlite3.Cursor = None  # Add type hint for 'cursor'
 
     def create_database(self):
+        """Create the database"""
         conn = sqlite3.connect(self.db_name)
         self.cursor = conn.cursor()
 
@@ -21,7 +22,8 @@ class DatabaseHandler:
         conn.commit()
         conn.close()
 
-    def store_data(self, encoded_platforms: List[Any], encoded_conditions: List[Any], encoded_services: List[Any]):
+    def store_data(self, encoded_platforms: List[Any], encoded_conditions: List[Any], encoded_services: List[Any]):  # pylint: disable=line-too-long
+        """Store the data in the database"""
         platforms_str = str(encoded_platforms.tolist())
         conditions_str = str(encoded_conditions.tolist())
         services_str = str(encoded_services.tolist())
@@ -38,6 +40,7 @@ class DatabaseHandler:
         conn.close()
 
     def get_automation_by_id(self, automation_id) -> Dict[str, Any]:
+        """Get the automation by id"""
         conn = sqlite3.connect(self.db_name)
         self.cursor = conn.cursor()
 
@@ -60,6 +63,7 @@ class DatabaseHandler:
         return automation
 
     def save_to_database(self, processed_data: List[Any]):
+        """Save the data to the database"""
         conn = sqlite3.connect(self.db_name)
         self.cursor = conn.cursor()
 

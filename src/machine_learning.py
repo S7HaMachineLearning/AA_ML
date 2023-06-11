@@ -21,7 +21,7 @@ class MachineLearning:
 
     class CustomJSONEncoder(json.JSONEncoder):
         """A custom JSON encoder"""
-        def default(self, object):
+        def default(self, object):  # pylint: disable=redefined-builtin
             if isinstance(object, time):
                 return object.strftime('%H:%M:%S')
             return super().default(object)
@@ -43,10 +43,10 @@ class MachineLearning:
             pickle.dump(self.tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # method to model the data and save the model
-    def data_modeling(self, automations):
+    def data_modeling(self, automations):  # pylint: disable=unused-argument
         """# Convert your automations into strings"""
         # Add the '<end>' token to the end of each automation string
-        automation_strings = [json.dumps(automation, cls=self.CustomJSONEncoder) + ' <end>' for automation in
+        automation_strings = [json.dumps(automation, cls=self.CustomJSONEncoder) + ' <end>' for automation in  # pylint: disable=line-too-long
                               self.automations]
 
         # Initialize the tokenizer
@@ -67,7 +67,7 @@ class MachineLearning:
 
         # Define the model
         model = Sequential()
-        model.add(Embedding(input_dim=len(tokenizer.word_index) + 1, output_dim=64, input_length=x_axis.shape[1]))
+        model.add(Embedding(input_dim=len(tokenizer.word_index) + 1, output_dim=64, input_length=x_axis.shape[1]))  # pylint: disable=line-too-long
         model.add(LSTM(64, return_sequences=True))
         model.add(Dense(len(tokenizer.word_index) + 1, activation='softmax'))
 
@@ -83,10 +83,7 @@ class MachineLearning:
 
         max_length = 16
         # Define the starting sequence
-        start_sequence = '{"alias": "Example automation", "trigger": {"platform": "state", "entity_id": "sun.sun", ' \
-                         '"to": "below_horizon"}, "condition": {"condition": "state", "entity_id": ' \
-                         '"device_tracker.person1", "state": "home"}, "action": {"service": "light.turn_on", "target": {' \
-                         '"entity_id": "light.living_room"}}'
+        start_sequence = '{"alias": "Example automation", "trigger": {"platform": "state", "entity_id": "sun.sun", "to": "below_horizon"}, "condition": {"condition": "state", "entity_id": "device_tracker.person1", "state": "home"}, "action": {"service": "light.turn_on", "target": {"entity_id": "light.living_room"}}}'  # pylint: disable=line-too-long
 
         # Convert the start sequence to tokens
         sequence = tokenizer.texts_to_sequences([start_sequence])[0]

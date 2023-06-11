@@ -42,7 +42,7 @@ class DataPreparation:
             # Check if conditions is a list, if not, convert it to a list
             if not isinstance(conditions, list):
                 conditions = [conditions]
-            automation_dict['conditions'] = [self.process_condition(condition) for condition in conditions]
+            automation_dict['conditions'] = [self.process_condition(condition) for condition in conditions]  # pylint: disable=line-too-long
 
             # Process actions
             actions = automation.get('action', [])
@@ -117,13 +117,13 @@ class DataPreparation:
                     with open(file, 'w', encoding="utf-8") as output_stream:
                         output_stream.write(corrected_data)
                     print(f"File '{filename}' corrected.")
-                except FileNotFoundError as file_error:
+                except FileNotFoundError as file_error:  # pylint: disable=unused-variable
                     print(f"Error: File '{filename}' not found.")
-                except PermissionError as permission_error:
+                except PermissionError as permission_error:  # pylint: disable=unused-variable
                     print(f"Error: Permission denied for file '{filename}'.")
                 except OSError as os_error:
                     print(f"Error accessing file '{filename}': {os_error}.")
-                except Exception as other_error:
+                except Exception as other_error:  # pylint: disable=broad-except
                     print(f"Error in file '{filename}': {other_error}")
 
     # This method will be used to process the automations in the directory.
@@ -171,13 +171,13 @@ class DataPreparation:
             num_triggers.append(len(automation['triggers']))
             num_conditions.append(len(automation['conditions']))
             num_actions.append(len(automation['actions']))
-            has_state_trigger.append(any(trigger['platform'] == 'state' for trigger in automation['triggers']))
+            has_state_trigger.append(any(trigger['platform'] == 'state' for trigger in automation['triggers']))  # pylint: disable=line-too-long
             has_sunrise_trigger.append(any(
                 trigger['platform'] == 'sun' and trigger.get('event') == 'sunrise' for trigger in
                 automation['triggers']))
 
         # Only show the first 5 values
-        return num_triggers[:5], num_conditions[:5], num_actions[:5], has_state_trigger[:5], has_sunrise_trigger[:5]
+        return num_triggers[:5], num_conditions[:5], num_actions[:5], has_state_trigger[:5], has_sunrise_trigger[:5]  # pylint: disable=line-too-long
 
     # This method will be used to run all the methods in the class.
     def run_all_methods(self):
