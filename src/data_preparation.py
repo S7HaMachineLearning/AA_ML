@@ -5,8 +5,6 @@ import re
 from sklearn.preprocessing import LabelEncoder
 from database_handler import DatabaseHandler
 
-"""Data preparation service"""
-
 
 # This class will be used to prepare data for the machine learning model.
 class DataPreparation:
@@ -18,6 +16,7 @@ class DataPreparation:
 
     # This method will be used to process the automations in the directory.
     def process_automations(self, file):
+        # Load the automations from the directory
         with open(file, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
@@ -27,6 +26,7 @@ class DataPreparation:
 
         automations = []
 
+        # Process each automation
         for automation in data_loaded:
             automation_dict = {}
 
@@ -51,14 +51,17 @@ class DataPreparation:
                 actions = [actions]
             automation_dict['actions'] = [self.process_action(action) for action in actions]
 
+            # Process alias
             automations.append(automation_dict)
 
         return automations
 
     # This method will be used to process the triggers in the automation.
     def process_trigger(self, trigger):
+        # Check if trigger is a list, if not, convert it to a list
         trigger_dict = {}
 
+        # Check if trigger is a list, if not, convert it to a list
         if 'platform' in trigger:
             trigger_dict['platform'] = trigger['platform']
         if 'entity_id' in trigger:
@@ -70,18 +73,19 @@ class DataPreparation:
 
     # This method will be used to process the actions in the automation.
     def process_action(self, action):
-        def process_action(action):
-            action_dict = {}
+        # Check if action is a list, if not, convert it to a list
+        action_dict = {}
 
-            if 'service' in action:
-                action_dict['service'] = action['service']
-            if 'target' in action:
-                action_dict['target'] = action['target']
+        if 'service' in action:
+            action_dict['service'] = action['service']
+        if 'target' in action:
+            action_dict['target'] = action['target']
 
-            return action_dict
+        return action_dict
 
     # This method will be used to process the conditions in the automation.
     def process_condition(self, condition):
+        # Check if condition is a list, if not, convert it to a list
         condition_dict = {}
 
         if 'condition' in condition:
@@ -101,6 +105,7 @@ class DataPreparation:
 
     # This method will be used to process the automations in the directory.
     def correct_yaml_files(self):
+        # Loop through all the files in the directory
         for filename in os.listdir(self.directory):
             if filename.endswith(".yaml"):
                 file = os.path.join(self.directory, filename)
@@ -112,8 +117,8 @@ class DataPreparation:
                         with open(file, 'w') as output_stream:
                             output_stream.write(corrected_data)
                         print(f"File '{filename}' corrected.")
-                    except Exception as e:
-                        print(f"Error in file '{filename}': {e}")
+                    except Exception as exception:
+                        print(f"Error in file '{filename}': {exception}")
 
     # This method will be used to process the automations in the directory.
     def preprocess_data(self):
@@ -170,20 +175,20 @@ class DataPreparation:
 
     # This method will be used to run all the methods in the class.
     def run_all_methods(self):
+        # Correct the YAML files
         self.correct_yaml_files()
 
         for filename in os.listdir(self.directory):
             if filename.endswith(".yaml"):
-                print("Processing file: " + filename)
                 file = os.path.join(self.directory, filename)
                 file_automations = self.process_automations(file)
                 self.automations.extend(file_automations)
 
         encoded_platforms, encoded_conditions, encoded_services = self.preprocess_data()
-        print(encoded_platforms, encoded_conditions, encoded_services)
+        encoded_platforms, encoded_conditions, encoded_services
 
         db_handler = DatabaseHandler('automations.db')
         db_handler.create_database()
         db_handler.store_data(encoded_platforms, encoded_conditions, encoded_services)
 
-        print(self.feature_engineering())
+        self.feature_engineering()

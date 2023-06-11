@@ -27,7 +27,7 @@ class MachineLearning:
 
     # method to load the model and tokenizer
     def load_model(self, model_path, tokenizer_path):  # Add the tokenizer_path parameter
-        # Load the model from the specified path
+        """ Load the model from the specified path """
         self.model = load_model(model_path)
         # Load the tokenizer from the specified path
         with open(tokenizer_path, 'rb') as handle:
@@ -35,7 +35,7 @@ class MachineLearning:
 
     # method to save model and tokenizer
     def save_model(self, model_path, tokenizer_path):  # Add the tokenizer_path parameter
-        # Save the model to the specified path
+        """# Save the model to the specified path"""
         self.model.save(model_path)
         # Save the tokenizer to the specified path
         with open(tokenizer_path, 'wb') as handle:
@@ -43,7 +43,7 @@ class MachineLearning:
 
     # method to model the data and save the model
     def data_modeling(self):
-        # Convert your automations into strings
+        """# Convert your automations into strings"""
         # automation_strings = [json.dumps(automation, cls=CustomJSONEncoder) for automation in automations]
         # Add the '<end>' token to the end of each automation string
         automation_strings = [json.dumps(automation, cls=self.CustomJSONEncoder) + ' <end>' for automation in
@@ -115,7 +115,7 @@ class MachineLearning:
 
     # method to generate automation
     def generate_automation(self, start_sequence):
-        # Convert the start sequence to tokens
+        """# Convert the start sequence to tokens"""
         sequence = self.tokenizer.texts_to_sequences([start_sequence])[0]
 
         # Pad the sequence

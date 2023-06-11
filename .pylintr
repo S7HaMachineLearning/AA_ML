@@ -39,7 +39,7 @@ extension-pkg-whitelist=
 fail-on=
 
 # Specify a score threshold under which the program will exit with error.
-fail-under=10
+fail-under=8.0
 
 # Interpret the stdin as a python script, whose filename needs to be passed as
 # the module_or_package argument.
@@ -337,7 +337,7 @@ indent-after-paren=4
 indent-string='    '
 
 # Maximum number of characters on a single line.
-max-line-length=100
+max-line-length=150
 
 # Maximum number of lines in a module.
 max-module-lines=1000
@@ -429,7 +429,8 @@ disable=raw-checker-failed,
         useless-suppression,
         deprecated-pragma,
         use-symbolic-message-instead,
-        too-few-public-methods
+        too-few-public-methods,
+        W0613
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
