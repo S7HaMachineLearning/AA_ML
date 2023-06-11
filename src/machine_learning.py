@@ -21,7 +21,7 @@ class MachineLearning:
 
     class CustomJSONEncoder(json.JSONEncoder):
         """A custom JSON encoder"""
-        def default(self, object):  # pylint: disable=redefined-builtin
+        def default(self, object):  # pylint: disable=redefined-builtin, arguments-renamed
             if isinstance(object, time):
                 return object.strftime('%H:%M:%S')
             return super().default(object)
@@ -98,7 +98,7 @@ class MachineLearning:
         # Add the predicted token to the sequence
         sequence = np.append(sequence[0], predicted_token)
 
-        # Continue predicting tokens until the end token is predicted or the maximum length is reached
+        # Continue predicting tokens until the end token is predicted or the maximum length is reached  # pylint: disable=line-too-long
         while predicted_token != tokenizer.word_index['<end>'] and len(sequence) < max_length:
             sequence = pad_sequences([sequence], maxlen=max_length, padding='post')
             prediction = model.predict(sequence)
@@ -125,8 +125,8 @@ class MachineLearning:
         # Add the predicted token to the sequence
         sequence = np.append(sequence[0], predicted_token)
 
-        # Continue predicting tokens until the end token is predicted or the maximum length is reached
-        while predicted_token != self.tokenizer.word_index['<end>'] and len(sequence) < self.max_length:
+        # Continue predicting tokens until the end token is predicted or the maximum length is reached  # pylint: disable=line-too-long
+        while predicted_token != self.tokenizer.word_index['<end>'] and len(sequence) < self.max_length:  # pylint: disable=line-too-long
             sequence = pad_sequences([sequence], maxlen=self.max_length, padding='post')
             prediction = self.model.predict(sequence)
             predicted_token = np.argmax(prediction[0, -1, :])
