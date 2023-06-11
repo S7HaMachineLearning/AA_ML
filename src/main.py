@@ -1,3 +1,4 @@
+"""Main file for the API. Contains all endpoints and the main function."""
 import urllib.request
 from json import JSONDecodeError
 from fastapi import FastAPI, HTTPException, Request
@@ -7,7 +8,9 @@ from machine_learning import MachineLearning
 import models
 from database_handler import DatabaseHandler
 
+# Create database connector for local DB
 db = DatabaseHandler("database.db")
+
 # load default model
 ml_model = MachineLearning()
 
@@ -20,6 +23,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+## API ENDPOINTS ##
 
 @app.post("/automations/")
 async def create_automation(automation: models.Automation):
@@ -76,15 +81,3 @@ def generate_automation(sequence: models.Sequence):
 
     return {"generated_automation": generated_automation}
 
-# if __name__ == '__main__':
-#    directory = 'D:/Temp/yaml'
-# location in the project where the automations are stored
-# src/automations
-# directory = 'automations'
-#    print(f"Directory: {directory}")
-
-#    data_prep = DataPreparation(directory)
-#    data_prep.run_all_methods()
-
-#    ml = MachineLearning(data_prep.automations)  # Pass the automations variable to MachineLearning
-#    print(ml.data_modeling())

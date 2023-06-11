@@ -1,10 +1,13 @@
+"""Database service"""
+from datetime import datetime
 import sqlite3
-
+import models
 
 class DatabaseHandler:
     def __init__(self, db_name):
         self.db_name = db_name
 
+    # Create the database if it doesn't exist
     def create_database(self):
         # Connect to the SQLite database (it will be created if it doesn't exist)
         conn = sqlite3.connect(self.db_name)
@@ -22,6 +25,7 @@ class DatabaseHandler:
         conn.commit()
         conn.close()
 
+    # Store the data in the database
     def store_data(self, encoded_platforms, encoded_conditions, encoded_services):
         # Convert the numpy arrays to lists and then to strings
         platforms_str = str(encoded_platforms.tolist())
@@ -44,6 +48,7 @@ class DatabaseHandler:
         conn.commit()
         conn.close()
 
+    # Get the data from the database
     def get_automation_by_id(self, automation_id):
         query = "SELECT * FROM automations WHERE id = ? AND deleted = 0"
         self.cursor.execute(query, (automation_id,))
@@ -63,6 +68,7 @@ class DatabaseHandler:
 
         return automation.values()
 
+    # Get all the data from the database
     def save_to_database(self, processed_data):
         # Connect to the SQLite database
         conn = sqlite3.connect(self.db_name)
