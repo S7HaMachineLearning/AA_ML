@@ -1,5 +1,5 @@
 """Main file for the API. Contains all endpoints and the main function."""
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from data_preparation import DataPreparation
 from machine_learning import MachineLearning
@@ -47,7 +47,7 @@ async def train_model(automation: models.Automation):
     ml_model.data_modeling(processed_data)
 
     # Save the trained model
-    ml_model.save_model("model.h5")
+    ml_model.save_model("model.h5", "tokenizer.pickle")
 
     return {"message": "Model trained and saved"}
 

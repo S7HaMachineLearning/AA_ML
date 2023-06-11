@@ -1,8 +1,10 @@
+"""Connectie string voor de database:"""
 import sqlite3
 from typing import List, Dict, Any
 
 
 class DatabaseHandler:
+    """Class for handling the database"""
     def __init__(self, db_name: str):
         self.db_name = db_name
         self.cursor: sqlite3.Cursor = None  # Add type hint for 'cursor'

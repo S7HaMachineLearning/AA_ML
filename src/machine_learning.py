@@ -21,7 +21,6 @@ class MachineLearning:
 
     class CustomJSONEncoder(json.JSONEncoder):
         """A custom JSON encoder"""
-
         def default(self, object):
             if isinstance(object, time):
                 return object.strftime('%H:%M:%S')
@@ -46,7 +45,6 @@ class MachineLearning:
     # method to model the data and save the model
     def data_modeling(self, automations):
         """# Convert your automations into strings"""
-        # automation_strings = [json.dumps(automation, cls=CustomJSONEncoder) for automation in automations]
         # Add the '<end>' token to the end of each automation string
         automation_strings = [json.dumps(automation, cls=self.CustomJSONEncoder) + ' <end>' for automation in
                               self.automations]
@@ -69,7 +67,7 @@ class MachineLearning:
 
         # Define the model
         model = Sequential()
-        model.add(Embedding(input_dim=len(tokenizer.word_index) + 1, output_dim=64, input_length=X.shape[1]))
+        model.add(Embedding(input_dim=len(tokenizer.word_index) + 1, output_dim=64, input_length=x_axis.shape[1]))
         model.add(LSTM(64, return_sequences=True))
         model.add(Dense(len(tokenizer.word_index) + 1, activation='softmax'))
 

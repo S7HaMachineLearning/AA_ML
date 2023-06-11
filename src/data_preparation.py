@@ -109,16 +109,22 @@ class DataPreparation:
         for filename in os.listdir(self.directory):
             if filename.endswith(".yaml"):
                 file = os.path.join(self.directory, filename)
-                with open(file, 'r', encoding="utf-8") as stream:
-                    try:
+                try:
+                    with open(file, 'r', encoding="utf-8") as stream:
                         data = stream.read()
                         # Ensure that the quotes in the alias line are matched correctly
                         corrected_data = re.sub(r'alias:\s*"([^"]*)\'', r'alias: "\1"', data)
-                        with open(file, 'w', encoding="utf-8") as output_stream:
-                            output_stream.write(corrected_data)
-                        print(f"File '{filename}' corrected.")
-                    except Exception as import_error:
-                        print(f"Error in file '{filename}': {import_error}")
+                    with open(file, 'w', encoding="utf-8") as output_stream:
+                        output_stream.write(corrected_data)
+                    print(f"File '{filename}' corrected.")
+                except FileNotFoundError as file_error:
+                    print(f"Error: File '{filename}' not found.")
+                except PermissionError as permission_error:
+                    print(f"Error: Permission denied for file '{filename}'.")
+                except OSError as os_error:
+                    print(f"Error accessing file '{filename}': {os_error}.")
+                except Exception as other_error:
+                    print(f"Error in file '{filename}': {other_error}")
 
     # This method will be used to process the automations in the directory.
     def preprocess_data(self):
