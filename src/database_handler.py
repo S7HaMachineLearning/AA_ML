@@ -1,9 +1,9 @@
 """Database service"""
-from datetime import datetime
 import sqlite3
-import models
+
 
 class DatabaseHandler:
+    """Database service"""
     def __init__(self, db_name):
         self.db_name = db_name
 
@@ -13,10 +13,10 @@ class DatabaseHandler:
         conn = sqlite3.connect(self.db_name)
 
         # Create a cursor object
-        c = conn.cursor()
+        cursor = conn.cursor()
 
         # Create table
-        c.execute('''
+        cursor.execute('''
             CREATE TABLE IF NOT EXISTS automations
             (platforms TEXT, conditions TEXT, services TEXT)
         ''')
@@ -36,10 +36,10 @@ class DatabaseHandler:
         conn = sqlite3.connect(self.db_name)
 
         # Create a cursor object
-        c = conn.cursor()
+        cursor = conn.cursor()
 
         # Insert data into the table
-        c.execute('''
+        cursor.execute('''
             INSERT INTO automations (platforms, conditions, services)
             VALUES (?, ?, ?)
         ''', (platforms_str, conditions_str, services_str))
@@ -74,10 +74,10 @@ class DatabaseHandler:
         conn = sqlite3.connect(self.db_name)
 
         # Create a cursor object
-        c = conn.cursor()
+        cursor = conn.cursor()
 
         # Insert data into the table
-        c.execute('''
+        cursor.execute('''
             INSERT INTO automations (platforms, conditions, services)
             VALUES (?, ?, ?)
         ''', (processed_data[0], processed_data[1], processed_data[2]))

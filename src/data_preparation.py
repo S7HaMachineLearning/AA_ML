@@ -10,11 +10,13 @@ from database_handler import DatabaseHandler
 
 # This class will be used to prepare data for the machine learning model.
 class DataPreparation:
+    """Data preparation service"""
 
     def __init__(self, directory):
         self.directory = directory
         self.automations = []
 
+    # This method will be used to process the automations in the directory.
     def process_automations(self, file):
         with open(file, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
@@ -53,6 +55,7 @@ class DataPreparation:
 
         return automations
 
+    # This method will be used to process the triggers in the automation.
     def process_trigger(self, trigger):
         trigger_dict = {}
 
@@ -65,6 +68,7 @@ class DataPreparation:
 
         return trigger_dict
 
+    # This method will be used to process the actions in the automation.
     def process_action(self, action):
         def process_action(action):
             action_dict = {}
@@ -76,6 +80,7 @@ class DataPreparation:
 
             return action_dict
 
+    # This method will be used to process the conditions in the automation.
     def process_condition(self, condition):
         condition_dict = {}
 
@@ -94,6 +99,7 @@ class DataPreparation:
 
         return condition_dict
 
+    # This method will be used to process the automations in the directory.
     def correct_yaml_files(self):
         for filename in os.listdir(self.directory):
             if filename.endswith(".yaml"):
@@ -109,6 +115,7 @@ class DataPreparation:
                     except Exception as e:
                         print(f"Error in file '{filename}': {e}")
 
+    # This method will be used to process the automations in the directory.
     def preprocess_data(self):
         # Initialize the encoders
         platform_encoder = LabelEncoder()
@@ -138,6 +145,7 @@ class DataPreparation:
 
         return encoded_platforms, encoded_conditions, encoded_services
 
+    # This method will be used to extract features from the automations.
     def feature_engineering(self):
         # Initialize lists to store the features
         num_triggers = []
@@ -160,6 +168,7 @@ class DataPreparation:
         # Only show the first 5 values
         return num_triggers[:5], num_conditions[:5], num_actions[:5], has_state_trigger[:5], has_sunrise_trigger[:5]
 
+    # This method will be used to run all the methods in the class.
     def run_all_methods(self):
         self.correct_yaml_files()
 

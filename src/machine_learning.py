@@ -10,18 +10,22 @@ import pickle
 
 
 class MachineLearning:
+    """A class for machine learning"""
     def __init__(self, automations=None, max_length=20,):
         self.automations = automations
         self.model = None  # The machine learning model
         self.tokenizer = Tokenizer(filters='')  # Initialize the tokenizer
         self.max_length = max_length  # The maximum length of a sequence
 
+
     class CustomJSONEncoder(json.JSONEncoder):
+        """A custom JSON encoder"""
         def default(self, obj):
             if isinstance(obj, datetime.time):
                 return obj.strftime('%H:%M:%S')
             return super().default(obj)
 
+    # method to load the model and tokenizer
     def load_model(self, model_path, tokenizer_path):  # Add the tokenizer_path parameter
         # Load the model from the specified path
         self.model = load_model(model_path)
@@ -29,6 +33,7 @@ class MachineLearning:
         with open(tokenizer_path, 'rb') as handle:
             self.tokenizer = pickle.load(handle)
 
+    # method to save model and tokenizer
     def save_model(self, model_path, tokenizer_path):  # Add the tokenizer_path parameter
         # Save the model to the specified path
         self.model.save(model_path)
@@ -36,6 +41,7 @@ class MachineLearning:
         with open(tokenizer_path, 'wb') as handle:
             pickle.dump(self.tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+    # method to model the data and save the model
     def data_modeling(self):
         # Convert your automations into strings
         # automation_strings = [json.dumps(automation, cls=CustomJSONEncoder) for automation in automations]
@@ -107,6 +113,7 @@ class MachineLearning:
 
         return automation[0]
 
+    # method to generate automation
     def generate_automation(self, start_sequence):
         # Convert the start sequence to tokens
         sequence = self.tokenizer.texts_to_sequences([start_sequence])[0]
