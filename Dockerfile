@@ -6,10 +6,10 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY /src .
-COPY automations.db .
-COPY tokenizer.pickle .
-COPY model.h5 .
+COPY src .
+COPY src/automations.db .
+COPY src/tokenizer.pickle .
+COPY src/model.h5 .
 
 
 CMD ["uvicorn", "main:app", "--host=0.0.0.0", "--port=80"]
