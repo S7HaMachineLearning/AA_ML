@@ -14,6 +14,7 @@ client = TestClient(main.app)  # use the app from the main module
 def test_generate_automation():
     """# Mock the MachineLearning class"""
     class MockMachineLearning(main.MachineLearning):
+        """Mock the MachineLearning class"""
         def load_model(self, model_path, tokenizer_path):
             pass
 
