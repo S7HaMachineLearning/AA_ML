@@ -1,7 +1,6 @@
 from fastapi.testclient import TestClient
 import pytest
-from main import app, MachineLearning
-from src import main
+import main  # import the main module
 
 # I've created a mock MachineLearning class that doesn't load any model or tokenizer and always
 # returns "Mock automation" when the generate_automation method is called.
@@ -9,12 +8,12 @@ from src import main
 # I've defined the request body, made a request to the API, and checked that the response status code is 200
 # and the response body contains the expected result.
 
-client = TestClient(app)
+client = TestClient(main.app)  # use the app from the main module
 
 
 def test_generate_automation():
     # Mock the MachineLearning class
-    class MockMachineLearning(MachineLearning):
+    class MockMachineLearning(main.MachineLearning):  # use the MachineLearning class from the main module
         def load_model(self, model_path, tokenizer_path):
             pass
 
