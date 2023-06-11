@@ -13,7 +13,7 @@ client = TestClient(main.app)  # use the app from the main module
 
 def test_generate_automation():
     # Mock the MachineLearning class
-    class MockMachineLearning(main.MachineLearning):  # use the MachineLearning class from the main module
+    class MockMachineLearning(main.MachineLearning):  # use the MachineLearning class from the main module  # pylint: line-too-long
         def load_model(self, model_path, tokenizer_path):
             pass
 
@@ -25,7 +25,7 @@ def test_generate_automation():
 
     # Define the request body
     request_body = {
-        "start_sequence": "{\"alias\": \"Example automation\", \"trigger\": {\"platform\": \"state\", \"entity_id\": \"sun.sun\", \"to\": \"below_horizon\"}, \"condition\": {\"condition\": \"state\", \"entity_id\": \"device_tracker.person1\", \"state\": \"home\"}, \"action\": {\"service\": \"light.turn_on\", \"target\": {\"entity_id\": \"light.living_room\"}}"
+        "start_sequence": "{\"alias\": \"Example automation\", \"trigger\": {\"platform\": \"state\", \"entity_id\": \"sun.sun\", \"to\": \"below_horizon\"}, \"condition\": {\"condition\": \"state\", \"entity_id\": \"device_tracker.person1\", \"state\": \"home\"}, \"action\": {\"service\": \"light.turn_on\", \"target\": {\"entity_id\": \"light.living_room\"}}"  # pylint: line-too-long
     }
 
     # Make a request to the API
@@ -36,7 +36,3 @@ def test_generate_automation():
 
     # Check that the response body contains the expected result
     assert response.json() == {"generated_automation": "Mock automation"}
-
-
-if __name__ == '__main__':
-    main()
