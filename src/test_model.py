@@ -31,7 +31,7 @@ def test_generate_automation():
     # Make a request to the API
     response = client.post("/generate_automation", json=request_body)
 
-    # Check that the response status code is 200
+    # Check that the response status code is 200 (OK)
     assert response.status_code == 200
 
     # Check that the response body contains the expected result
