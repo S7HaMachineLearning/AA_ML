@@ -1,29 +1,31 @@
+""" A module for machine learning"""
 import json
+import pickle
+import numpy as np
 from datetime import datetime
 from keras.preprocessing.text import Tokenizer
 from keras.utils import pad_sequences
 from keras.models import Sequential
 from keras.layers import Embedding, LSTM, Dense
-import numpy as np
 from keras.models import load_model
-import pickle
 
 
 class MachineLearning:
     """A class for machine learning"""
-    def __init__(self, automations=None, max_length=20,):
+
+    def __init__(self, automations=None, max_length=20, ):
         self.automations = automations
         self.model = None  # The machine learning model
         self.tokenizer = Tokenizer(filters='')  # Initialize the tokenizer
         self.max_length = max_length  # The maximum length of a sequence
 
-
     class CustomJSONEncoder(json.JSONEncoder):
         """A custom JSON encoder"""
-        def default(self, obj):
-            if isinstance(obj, datetime.time):
-                return obj.strftime('%H:%M:%S')
-            return super().default(obj)
+
+        def default(self, object):
+            if isinstance(object, datetime.time):
+                return object.strftime('%H:%M:%S')
+            return super().default(object)
 
     # method to load the model and tokenizer
     def load_model(self, model_path, tokenizer_path):  # Add the tokenizer_path parameter

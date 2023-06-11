@@ -1,6 +1,4 @@
 """Main file for the API. Contains all endpoints and the main function."""
-import urllib.request
-from json import JSONDecodeError
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from data_preparation import DataPreparation
@@ -14,6 +12,7 @@ db = DatabaseHandler("database.db")
 # load default model
 ml_model = MachineLearning()
 
+# Initialize the FastAPI app
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -28,7 +27,7 @@ app.add_middleware(
 
 @app.post("/automations/")
 async def create_automation(automation: models.Automation):
-    # Process the automation data
+    """# Process the automation data"""
     data_prep = DataPreparation(directory="automations/testset")
     processed_data = data_prep.process_automations(automation.dict())
 
@@ -40,7 +39,7 @@ async def create_automation(automation: models.Automation):
 
 @app.post("/datamodelling/")
 async def train_model(automation: models.Automation):
-    # Process the automation data
+    """# Process the automation data"""
     data_prep = DataPreparation(directory="automations/testset")
     processed_data = data_prep.process_automations(automation.dict())
 
@@ -55,7 +54,7 @@ async def train_model(automation: models.Automation):
 
 @app.get("/automations/{automation_id}")
 async def read_automation(automation_id: int):
-    # Load the trained model
+    """# Load the trained model"""
     ml_model.load_model("model.h5")
 
     # TODO: Get the automation from the database
@@ -70,7 +69,7 @@ async def read_automation(automation_id: int):
 
 @app.post("/generate_automation")
 def generate_automation(sequence: models.Sequence):
-    # Initialize the machine learning
+    """# Initialize the machine learning"""
     machine_learning = MachineLearning()
 
     # Load the model and tokenizer
@@ -80,4 +79,3 @@ def generate_automation(sequence: models.Sequence):
     generated_automation = machine_learning.generate_automation(sequence.start_sequence)
 
     return {"generated_automation": generated_automation}
-

@@ -1,7 +1,7 @@
 """Data preparation service"""
 import os
-import yaml
 import re
+import yaml
 from sklearn.preprocessing import LabelEncoder
 from database_handler import DatabaseHandler
 
@@ -16,8 +16,8 @@ class DataPreparation:
 
     # This method will be used to process the automations in the directory.
     def process_automations(self, file):
-        # Load the automations from the directory
-        with open(file, 'r') as stream:
+        """# Load the automations from the directory"""
+        with open(file, 'r', encoding="utf-8") as stream:
             data_loaded = yaml.safe_load(stream)
 
         # Check if data_loaded is a list, if not, convert it to a list
@@ -58,7 +58,7 @@ class DataPreparation:
 
     # This method will be used to process the triggers in the automation.
     def process_trigger(self, trigger):
-        # Check if trigger is a list, if not, convert it to a list
+        """# Check if trigger is a list, if not, convert it to a list"""
         trigger_dict = {}
 
         # Check if trigger is a list, if not, convert it to a list
@@ -73,7 +73,7 @@ class DataPreparation:
 
     # This method will be used to process the actions in the automation.
     def process_action(self, action):
-        # Check if action is a list, if not, convert it to a list
+        """# Check if action is a list, if not, convert it to a list"""
         action_dict = {}
 
         if 'service' in action:
@@ -85,7 +85,7 @@ class DataPreparation:
 
     # This method will be used to process the conditions in the automation.
     def process_condition(self, condition):
-        # Check if condition is a list, if not, convert it to a list
+        """# Check if condition is a list, if not, convert it to a list"""
         condition_dict = {}
 
         if 'condition' in condition:
@@ -105,11 +105,11 @@ class DataPreparation:
 
     # This method will be used to process the automations in the directory.
     def correct_yaml_files(self):
-        # Loop through all the files in the directory
+        """# Loop through all the files in the directory"""
         for filename in os.listdir(self.directory):
             if filename.endswith(".yaml"):
                 file = os.path.join(self.directory, filename)
-                with open(file, 'r') as stream:
+                with open(file, 'r', encoding="utf-8") as stream:
                     try:
                         data = stream.read()
                         # Ensure that the quotes in the alias line are matched correctly
@@ -117,12 +117,12 @@ class DataPreparation:
                         with open(file, 'w') as output_stream:
                             output_stream.write(corrected_data)
                         print(f"File '{filename}' corrected.")
-                    except Exception as exception:
-                        print(f"Error in file '{filename}': {exception}")
+                    except Exception as ImportError:
+                        print(f"Error in file '{filename}': {ImportError}")
 
     # This method will be used to process the automations in the directory.
     def preprocess_data(self):
-        # Initialize the encoders
+        """# Initialize the encoders"""
         platform_encoder = LabelEncoder()
         condition_encoder = LabelEncoder()
         service_encoder = LabelEncoder()
@@ -152,7 +152,7 @@ class DataPreparation:
 
     # This method will be used to extract features from the automations.
     def feature_engineering(self):
-        # Initialize lists to store the features
+        """# Initialize lists to store the features"""
         num_triggers = []
         num_conditions = []
         num_actions = []
@@ -175,7 +175,7 @@ class DataPreparation:
 
     # This method will be used to run all the methods in the class.
     def run_all_methods(self):
-        # Correct the YAML files
+        """# Correct the YAML files"""
         self.correct_yaml_files()
 
         for filename in os.listdir(self.directory):
@@ -185,7 +185,6 @@ class DataPreparation:
                 self.automations.extend(file_automations)
 
         encoded_platforms, encoded_conditions, encoded_services = self.preprocess_data()
-        encoded_platforms, encoded_conditions, encoded_services
 
         db_handler = DatabaseHandler('automations.db')
         db_handler.create_database()

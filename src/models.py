@@ -36,23 +36,26 @@ class HaSensor(BaseModel):  # pylint: disable=too-few-public-methods
     state: str
 
 
-class Automation(BaseModel): # pylint: disable=no-name-in-module
+class Automation(BaseModel):  # pylint: disable=no-name-in-module
+    """Automation model."""
     triggers: Optional[List[Dict[str, Any]]] = None
     conditions: Optional[List[Dict[str, Any]]] = None
     actions: Optional[List[Dict[str, Any]]] = None
 
 
-class NewAutomation(BaseModel): # pylint: disable=no-name-in-module
+class NewAutomation(BaseModel):  # pylint: disable=no-name-in-module
     """New automation model."""
     value: str
 
 
-class StartSequence(BaseModel): # pylint: disable=no-name-in-module
+class StartSequence(BaseModel):  # pylint: disable=no-name-in-module
+    """Start sequence model."""
     alias: str
     trigger: dict
     condition: dict
     action: dict
 
 
-class Sequence(BaseModel): # pylint: disable=no-name-in-module
+class Sequence(BaseModel):  # pylint: disable=no-name-in-module
+    """Sequence model."""
     start_sequence: str

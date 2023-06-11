@@ -9,7 +9,7 @@ class DatabaseHandler:
 
     # Create the database if it doesn't exist
     def create_database(self):
-        # Connect to the SQLite database (it will be created if it doesn't exist)
+        """# Connect to the SQLite database (it will be created if it doesn't exist)"""
         conn = sqlite3.connect(self.db_name)
 
         # Create a cursor object
@@ -27,7 +27,7 @@ class DatabaseHandler:
 
     # Store the data in the database
     def store_data(self, encoded_platforms, encoded_conditions, encoded_services):
-        # Convert the numpy arrays to lists and then to strings
+        """# Convert the numpy arrays to lists and then to strings"""
         platforms_str = str(encoded_platforms.tolist())
         conditions_str = str(encoded_conditions.tolist())
         services_str = str(encoded_services.tolist())
@@ -50,6 +50,7 @@ class DatabaseHandler:
 
     # Get the data from the database
     def get_automation_by_id(self, automation_id):
+        """# Connect to the SQLite database"""
         query = "SELECT * FROM automations WHERE id = ? AND deleted = 0"
         self.cursor.execute(query, (automation_id,))
         result = self.cursor.fetchone()
@@ -70,7 +71,7 @@ class DatabaseHandler:
 
     # Get all the data from the database
     def save_to_database(self, processed_data):
-        # Connect to the SQLite database
+        """# Connect to the SQLite database"""
         conn = sqlite3.connect(self.db_name)
 
         # Create a cursor object
