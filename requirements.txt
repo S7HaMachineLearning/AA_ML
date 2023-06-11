@@ -1,3 +1,8 @@
-fastapi
+fastapi~=0.96.0
 uvicorn
 pylint
+pydantic~=1.10.8
+PyYAML~=6.0
+numpy~=1.23.5
+scikit-learn~=1.2.2
+keras~=2.12.0

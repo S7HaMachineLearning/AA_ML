@@ -6,12 +6,15 @@ from keras.models import Sequential
 from keras.layers import Embedding, LSTM, Dense
 import numpy as np
 from keras.models import load_model
+import pickle
+
 
 class MachineLearning:
-    def __init__(self, automations, model_path='model.h5'):
+    def __init__(self, automations=None, max_length=20,):
         self.automations = automations
-        self.model_path = model_path
-        self.model = None
+        self.model = None  # The machine learning model
+        self.tokenizer = Tokenizer(filters='')  # Initialize the tokenizer
+        self.max_length = max_length  # The maximum length of a sequence
 
     class CustomJSONEncoder(json.JSONEncoder):
         def default(self, obj):
@@ -19,19 +22,26 @@ class MachineLearning:
                 return obj.strftime('%H:%M:%S')
             return super().default(obj)
 
-    def save_model(self):
-        # Save the model
-        self.model.save(self.model_path)
+    def load_model(self, model_path, tokenizer_path):  # Add the tokenizer_path parameter
+        # Load the model from the specified path
+        self.model = load_model(model_path)
+        # Load the tokenizer from the specified path
+        with open(tokenizer_path, 'rb') as handle:
+            self.tokenizer = pickle.load(handle)
 
-    def load_model(self):
-        # Load the model
-        self.model = load_model(self.model_path)
+    def save_model(self, model_path, tokenizer_path):  # Add the tokenizer_path parameter
+        # Save the model to the specified path
+        self.model.save(model_path)
+        # Save the tokenizer to the specified path
+        with open(tokenizer_path, 'wb') as handle:
+            pickle.dump(self.tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def data_modeling(self):
         # Convert your automations into strings
         # automation_strings = [json.dumps(automation, cls=CustomJSONEncoder) for automation in automations]
         # Add the '<end>' token to the end of each automation string
-        automation_strings = [json.dumps(automation, cls=self.CustomJSONEncoder) + ' <end>' for automation in self.automations]
+        automation_strings = [json.dumps(automation, cls=self.CustomJSONEncoder) + ' <end>' for automation in
+                              self.automations]
 
         # Initialize the tokenizer
         tokenizer = Tokenizer(filters='')
@@ -97,16 +107,12 @@ class MachineLearning:
 
         return automation[0]
 
-    def generate_automation(self, start_sequence, max_length=20):
-        if self.model is None:
-            print("No model found. Please train or load a model first.")
-            return
-
+    def generate_automation(self, start_sequence):
         # Convert the start sequence to tokens
         sequence = self.tokenizer.texts_to_sequences([start_sequence])[0]
 
         # Pad the sequence
-        sequence = pad_sequences([sequence], maxlen=max_length, padding='post')
+        sequence = pad_sequences([sequence], maxlen=self.max_length, padding='post')
 
         # Use the model to predict the next token
         prediction = self.model.predict(sequence)
@@ -116,8 +122,8 @@ class MachineLearning:
         sequence = np.append(sequence[0], predicted_token)
 
         # Continue predicting tokens until the end token is predicted or the maximum length is reached
-        while predicted_token != self.tokenizer.word_index['<end>'] and len(sequence) < max_length:
-            sequence = pad_sequences([sequence], maxlen=max_length, padding='post')
+        while predicted_token != self.tokenizer.word_index['<end>'] and len(sequence) < self.max_length:
+            sequence = pad_sequences([sequence], maxlen=self.max_length, padding='post')
             prediction = self.model.predict(sequence)
             predicted_token = np.argmax(prediction[0, -1, :])
             sequence = np.append(sequence[0], predicted_token)

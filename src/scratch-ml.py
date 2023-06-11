@@ -1,5 +1,7 @@
 """ML service"""
 import os
+import pickle
+
 import yaml
 from datetime import datetime, time
 import json
@@ -7,10 +9,16 @@ from sklearn.preprocessing import LabelEncoder
 import re
 from keras.preprocessing.text import Tokenizer
 from keras.utils import pad_sequences
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.layers import Embedding, LSTM, Dense
 import numpy as np
 
+
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.time):
+            return obj.strftime('%H:%M:%S')
+        return super().default(obj)
 
 def process_automations(file):
     with open(file, 'r') as stream:
@@ -164,6 +172,7 @@ def data_modeling(automations):
     # automation_strings = [json.dumps(automation, cls=CustomJSONEncoder) for automation in automations]
     # Add the '<end>' token to the end of each automation string
     automation_strings = [json.dumps(automation, cls=CustomJSONEncoder) + ' <end>' for automation in automations]
+    print(automation_strings[0])
 
     # Initialize the tokenizer
     tokenizer = Tokenizer(filters='')
@@ -196,6 +205,10 @@ def data_modeling(automations):
     # Train the model
     model.fit(X, y_reshaped, epochs=10, validation_split=0.2)
     model.save('model.h5')
+
+    # Save the tokenizer
+    with open('tokenizer.pickle', 'wb') as handle:
+        pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     max_length = 20
     # Define the starting sequence
@@ -272,25 +285,67 @@ def process_condition(condition):
     return condition_dict
 
 
+def generate_automation(start_sequence, model, tokenizer, max_length=20):
+    # Convert the start sequence to tokens
+    sequence = tokenizer.texts_to_sequences([start_sequence])[0]
+
+    # Pad the sequence
+    sequence = pad_sequences([sequence], maxlen=max_length, padding='post')
+
+    # Use the model to predict the next token
+    prediction = model.predict(sequence)
+    predicted_token = np.argmax(prediction[0, -1, :])
+
+    # Add the predicted token to the sequence
+    sequence = np.append(sequence[0], predicted_token)
+
+    # Continue predicting tokens until the end token is predicted or the maximum length is reached
+    while predicted_token != tokenizer.word_index['<end>'] and len(sequence) < max_length:
+        sequence = pad_sequences([sequence], maxlen=max_length, padding='post')
+        prediction = model.predict(sequence)
+        predicted_token = np.argmax(prediction[0, -1, :])
+        sequence = np.append(sequence[0], predicted_token)
+
+    # Convert the sequence of tokens back into text
+    automation = tokenizer.sequences_to_texts([sequence])
+
+    return automation[0]
+
+
 if __name__ == '__main__':
     directory = 'D:/Code/SEM7/AA_ML/automations/'
     directory = 'D:/Temp/yaml'
     automations = []
 
-    correct_yaml_files(directory)
+    #correct_yaml_files(directory)
 
     # loop through all the yaml files in the directory D:/Temp/yaml
-    for filename in os.listdir(directory):
-        if filename.endswith(".yaml"):
-            print("Processing file: " + filename)
-            file = os.path.join(directory, filename)
-            file_automations = process_automations(file)
-            automations.extend(file_automations)
+    #for filename in os.listdir(directory):
+    #    if filename.endswith(".yaml"):
+    #        print("Processing file: " + filename)
+    #        file = os.path.join(directory, filename)
+    #        file_automations = process_automations(file)
+    #        automations.extend(file_automations)
 
     # preprocess_data(automations)
-    print(prepocess_data(automations))
+    #print(prepocess_data(automations))
 
-    # feature_engineering(automations)
-    print(feature_engineering(automations))
+    #feature_engineering(automations)
+    #print(feature_engineering(automations))
 
-    print(data_modeling(automations))
+    #print(data_modeling(automations))
+
+    sequence = '{"alias": "Example automation", "trigger": {"platform": "state", "entity_id": "sun.sun", ' \
+                    '"to": "below_horizon"}, "condition": {"condition": "state", "entity_id": ' \
+                    '"device_tracker.person1", "state": "home"}, "action": {"service": "light.turn_on", "target": {' \
+                    '"entity_id": "light.living_room"}}'
+
+    # Load the tokenizer
+    with open('tokenizer.pickle', 'rb') as handle:
+        tokenizer = pickle.load(handle)
+
+    # Load the model
+    model = load_model('model.h5')
+
+    # Convert the start sequence to tokens
+    print(generate_automation(sequence, model, tokenizer))

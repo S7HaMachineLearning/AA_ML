@@ -2,9 +2,9 @@
 """Models for the application."""
 
 from enum import Enum
-from pydantic import BaseModel  # pylint: disable=no-name-in-module
-from typing import Optional
+from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
+
 
 class SensorType(Enum):  # pylint: disable=too-few-public-methods
     """Enum for sensor types."""
@@ -41,3 +41,19 @@ class Automation(BaseModel):
     triggers: Optional[List[Dict[str, Any]]] = None
     conditions: Optional[List[Dict[str, Any]]] = None
     actions: Optional[List[Dict[str, Any]]] = None
+
+
+class NewAutomation(BaseModel):
+    """New automation model."""
+    value: str
+
+
+class StartSequence(BaseModel):
+    alias: str
+    trigger: dict
+    condition: dict
+    action: dict
+
+
+class Sequence(BaseModel):
+    start_sequence: str
