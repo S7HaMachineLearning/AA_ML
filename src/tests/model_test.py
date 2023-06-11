@@ -11,6 +11,7 @@ from src import main
 
 client = TestClient(app)
 
+
 def test_generate_automation():
     # Mock the MachineLearning class
     class MockMachineLearning(MachineLearning):
@@ -36,3 +37,7 @@ def test_generate_automation():
 
     # Check that the response body contains the expected result
     assert response.json() == {"generated_automation": "Mock automation"}
+
+
+if __name__ == '__main__':
+    main()
