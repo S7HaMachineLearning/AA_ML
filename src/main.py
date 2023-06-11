@@ -71,13 +71,13 @@ async def read_automation(automation_id: int):
 @app.post("/generate_automation")
 def generate_automation(sequence: models.Sequence):
     # Initialize the machine learning
-    ml = MachineLearning()
+    machine_learning = MachineLearning()
 
     # Load the model and tokenizer
-    ml.load_model('model.h5', 'tokenizer.pickle')
+    machine_learning.load_model('model.h5', 'tokenizer.pickle')
 
     # Generate an automation
-    generated_automation = ml.generate_automation(sequence.start_sequence)
+    generated_automation = machine_learning.generate_automation(sequence.start_sequence)
 
     return {"generated_automation": generated_automation}
 

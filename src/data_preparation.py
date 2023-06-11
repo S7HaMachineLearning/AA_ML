@@ -5,6 +5,9 @@ import re
 from sklearn.preprocessing import LabelEncoder
 from database_handler import DatabaseHandler
 
+"""Data preparation service"""
+
+
 # This class will be used to prepare data for the machine learning model.
 class DataPreparation:
 
