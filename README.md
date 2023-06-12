@@ -92,5 +92,5 @@ CREATE TABLE "automations" (
 );
 ```
 
-## Conclusion
+##  Conclusion
 This project is a great example of how machine learning can be used in the field of home automation. By training a model on existing automation data, we can generate new automation sequences, potentially uncovering useful patterns and saving time for users.

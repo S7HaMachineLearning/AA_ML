@@ -58,10 +58,8 @@ class DataPreparation:
 
     # This method will be used to process the triggers in the automation.
     def process_trigger(self, trigger):
-        """# Check if trigger is a list, if not, convert it to a list"""
+        """Process a trigger dictionary and extract the 'platform', 'entity_id', and 'to' fields."""
         trigger_dict = {}
-
-        # Check if trigger is a list, if not, convert it to a list
         if 'platform' in trigger:
             trigger_dict['platform'] = trigger['platform']
         if 'entity_id' in trigger:
@@ -73,9 +71,8 @@ class DataPreparation:
 
     # This method will be used to process the actions in the automation.
     def process_action(self, action):
-        """# Check if action is a list, if not, convert it to a list"""
+        """Process an action dictionary and extract the 'service' and 'target' fields."""
         action_dict = {}
-
         if 'service' in action:
             action_dict['service'] = action['service']
         if 'target' in action:
@@ -85,7 +82,8 @@ class DataPreparation:
 
     # This method will be used to process the conditions in the automation.
     def process_condition(self, condition):
-        """# Check if condition is a list, if not, convert it to a list"""
+        """Process a condition dictionary and extract the 'condition', 'before' and 'after in
+        sunset/sunrise' and convert 'sunset' and 'sunrise' fields."""
         condition_dict = {}
 
         if 'condition' in condition:
@@ -184,6 +182,7 @@ class DataPreparation:
         """# Correct the YAML files"""
         self.correct_yaml_files()
 
+        # Loop through all the files in the directory
         for filename in os.listdir(self.directory):
             if filename.endswith(".yaml"):
                 file = os.path.join(self.directory, filename)
@@ -197,3 +196,4 @@ class DataPreparation:
         db_handler.store_data(encoded_platforms, encoded_conditions, encoded_services)
 
         self.feature_engineering()
+

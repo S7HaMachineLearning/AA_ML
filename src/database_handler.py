@@ -1,28 +1,50 @@
 """Connectie string voor de database:"""
 import sqlite3
+import hashlib
+import json
 from typing import List, Dict, Any
 
 
 class DatabaseHandler:
     """Class for handling the database"""
+
     def __init__(self, db_name: str):
         self.db_name = db_name
         self.cursor: sqlite3.Cursor = None  # Add type hint for 'cursor'
 
     def create_database(self):
-        """Create the database"""
+        """Create the database and the tables"""
         conn = sqlite3.connect(self.db_name)
         self.cursor = conn.cursor()
 
+        # Create the 'raw_automations' table
         self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS automations
-            (platforms TEXT, conditions TEXT, services TEXT)
+            CREATE TABLE IF NOT EXISTS raw_automations
+            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+             hash TEXT UNIQUE,
+             data TEXT,
+             createdOn TEXT DEFAULT CURRENT_TIMESTAMP,
+             updatedOn TEXT,
+             deleted INTEGER DEFAULT 0)
+        ''')
+
+        # Create the 'processed_automations' table
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS processed_automations
+            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+             platforms TEXT,
+             conditions TEXT,
+             services TEXT,
+             createdOn TEXT DEFAULT CURRENT_TIMESTAMP,
+             updatedOn TEXT,
+             deleted INTEGER DEFAULT 0)
         ''')
 
         conn.commit()
         conn.close()
 
-    def store_data(self, encoded_platforms: List[Any], encoded_conditions: List[Any], encoded_services: List[Any]):  # pylint: disable=line-too-long
+    def store_data(self, encoded_platforms: List[Any], encoded_conditions: List[Any],
+                   encoded_services: List[Any]):  # pylint: disable=line-too-long
         """Store the data in the database"""
         platforms_str = str(encoded_platforms.tolist())
         conditions_str = str(encoded_conditions.tolist())
@@ -74,3 +96,28 @@ class DatabaseHandler:
 
         conn.commit()
         conn.close()
+
+    def store_raw_data(self, automation_data):
+        """Store the raw automation data in the database, if it doesn't already exist."""
+        # Calculate a hash of the automation data
+        automation_hash = hashlib.sha256(json.dumps(automation_data, sort_keys=True).encode()).hexdigest()
+
+        conn = sqlite3.connect(self.db_name)
+        self.cursor = conn.cursor()
+
+        # Check if an automation with the same hash already exists in the database
+        self.cursor.execute('SELECT * FROM raw_automations WHERE hash = ?', (automation_hash,))
+        if self.cursor.fetchone() is not None:
+            # The automation already exists in the database, so don't insert it again
+            print("Automation already exists in the database.")
+            return
+
+        # The automation doesn't exist in the database, so insert it
+        self.cursor.execute('''
+            INSERT INTO raw_automations (hash, data)
+            VALUES (?, ?)
+        ''', (automation_hash, json.dumps(automation_data)))
+
+        conn.commit()
+        conn.close()
+
