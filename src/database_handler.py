@@ -93,7 +93,7 @@ class DatabaseHandler:
         self.cursor.execute('''
             INSERT INTO processed_automations (platforms, conditions, services)
             VALUES (?, ?, ?)
-        ''', (json.dumps(processed_data[0]), json.dumps(processed_data[1]), json.dumps(processed_data[2])))
+        ''', (json.dumps(processed_data[0]), json.dumps(processed_data[1]), json.dumps(processed_data[2])))  # pylint: disable=line-too-long
 
         conn.commit()
         conn.close()
