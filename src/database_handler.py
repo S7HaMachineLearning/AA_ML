@@ -54,7 +54,7 @@ class DatabaseHandler:
         self.cursor = conn.cursor()
 
         self.cursor.execute('''
-            INSERT INTO automations (platforms, conditions, services)
+            INSERT INTO processed_automations (platforms, conditions, services)
             VALUES (?, ?, ?)
         ''', (platforms_str, conditions_str, services_str))
 
@@ -66,7 +66,7 @@ class DatabaseHandler:
         conn = sqlite3.connect(self.db_name)
         self.cursor = conn.cursor()
 
-        query = "SELECT * FROM automations WHERE id = ? AND deleted = 0"
+        query = "SELECT * FROM processed_automations WHERE id = ?"
         self.cursor.execute(query, (automation_id,))
         result = self.cursor.fetchone()
 
@@ -75,11 +75,12 @@ class DatabaseHandler:
 
         automation = {
             "id": result[0],
-            "value": result[1],
-            "type": result[2],
-            "createdOn": result[3],
-            "updatedOn": result[4],
-            "deleted": result[5]
+            "platforms": result[1],
+            "conditions": result[2],
+            "services": result[3],
+            "createdOn": result[4],
+            "updatedOn": result[5],
+            "deleted": result[6]
         }
 
         return automation
@@ -90,9 +91,9 @@ class DatabaseHandler:
         self.cursor = conn.cursor()
 
         self.cursor.execute('''
-            INSERT INTO automations (platforms, conditions, services)
+            INSERT INTO processed_automations (platforms, conditions, services)
             VALUES (?, ?, ?)
-        ''', (processed_data[0], processed_data[1], processed_data[2]))
+        ''', (json.dumps(processed_data[0]), json.dumps(processed_data[1]), json.dumps(processed_data[2])))
 
         conn.commit()
         conn.close()
