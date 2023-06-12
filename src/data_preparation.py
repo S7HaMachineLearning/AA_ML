@@ -196,4 +196,3 @@ class DataPreparation:
         db_handler.store_data(encoded_platforms, encoded_conditions, encoded_services)
 
         self.feature_engineering()
-

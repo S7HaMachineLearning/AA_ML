@@ -100,7 +100,7 @@ class DatabaseHandler:
     def store_raw_data(self, automation_data):
         """Store the raw automation data in the database, if it doesn't already exist."""
         # Calculate a hash of the automation data
-        automation_hash = hashlib.sha256(json.dumps(automation_data, sort_keys=True).encode()).hexdigest()
+        automation_hash = hashlib.sha256(json.dumps(automation_data, sort_keys=True).encode()).hexdigest()  # pylint: disable=line-too-long
 
         conn = sqlite3.connect(self.db_name)
         self.cursor = conn.cursor()
@@ -120,4 +120,3 @@ class DatabaseHandler:
 
         conn.commit()
         conn.close()
-
