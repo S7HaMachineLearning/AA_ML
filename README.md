@@ -1,12 +1,16 @@
-# AA_ML
+# Home Automation Machine Learning Project
 
-The backend for the AA(Automate Automations) project.\
-A REST api running in python, using FastAPI and SQLite.
+Introduction
+This project is a machine learning application designed to generate home automation sequences. \
+It uses a combination of data preparation, machine learning, and a RESTful API to process, model, \
+and serve automation data.
 
-The database is stored in the file `database.db` in the root directory of the project.
+
 
 ## Development
-
+The project is developed in Python, using the FastAPI framework for the API, and Keras for the \ 
+machine learning component. SQLite is used for the database and stored locally in the project directory. \
+\
 Create new venv
 ```
 python -m venv .venv
@@ -32,6 +36,16 @@ Update  requirements.txt
 pip3 freeze > requirements.txt 
 ```
 
+## Building docker image
+```
+$ docker build -t automation-api .
+```
+Run docker image
+```
+$ docker run -d -p 8000:8000 automation-api
+```
+
+
 ## Running server
 Run the server
 ```
@@ -45,12 +59,12 @@ $ python -m uvicorn main:app --host 0.0.0.0 --port 8000
 
 ## Testing
 
-All tests are located in the `tests` directory.\
+All tests are located in the `src` directory.\
 A test database is also included in this folder and is used for testing.
 
 To test all the existing tests, run the following command in the root directory of the project
 ```
-$ python -m unittest discover -s tests/ -p "*_test.py"
+$ python -m unittest discover -s . -p "*_test.py"
 ```
 
 ## Linting
@@ -62,7 +76,9 @@ $ pylint *.py
 ```
 
 ## Database
+The project uses SQLite for the database. The database file is `database.db`, and the schema is defined in `database_handler.py`.
 
+To interact with the database, use the `DatabaseHandler` class, which provides methods for saving and retrieving data.
 ### Automation table
 ```sql
 CREATE TABLE "automations" (
@@ -75,5 +91,6 @@ CREATE TABLE "automations" (
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 ```
-### Data modelling table
-```sql  
+
+## Conclusion
+This project is a great example of how machine learning can be used in the field of home automation. By training a model on existing automation data, we can generate new automation sequences, potentially uncovering useful patterns and saving time for users.
