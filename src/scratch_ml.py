@@ -1,12 +1,12 @@
-"""ML service"""
+"""This script is a complete workflow for building a machine learning model to predict the service of an automation in Home Assistant."""
 import os
 import pickle
 
-import yaml
 from datetime import datetime, time
 import json
-from sklearn.preprocessing import LabelEncoder
 import re
+import yaml
+from sklearn.preprocessing import LabelEncoder
 from keras.preprocessing.text import Tokenizer
 from keras.utils import pad_sequences
 from keras.models import Sequential, load_model
@@ -15,20 +15,24 @@ import numpy as np
 
 
 class CustomJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, datetime.time):
-            return obj.strftime('%H:%M:%S')
-        return super().default(obj)
+    """A custom JSON encoder"""
+
+    def default(self, object):  # pylint: disable=redefined-builtin, arguments-renamed
+        if isinstance(object, time):
+            return object.strftime('%H:%M:%S')
+        return super().default(object)
+
 
 def process_automations(file):
-    with open(file, 'r') as stream:
+    """Process the automations in the specified file"""
+    with open(file, 'r', encoding='utf-8') as stream:
         data_loaded = yaml.safe_load(stream)
 
     # Check if data_loaded is a list, if not, convert it to a list
     if not isinstance(data_loaded, list):
         data_loaded = [data_loaded]
 
-    automations = []
+    processed_automations  = []
 
     for automation in data_loaded:
         automation_dict = {}
@@ -54,12 +58,13 @@ def process_automations(file):
             actions = [actions]
         automation_dict['actions'] = [process_action(action) for action in actions]
 
-        automations.append(automation_dict)
+        processed_automations .append(automation_dict)
 
-    return automations
+    return processed_automations
 
 
 def process_trigger(trigger):
+    """Process a trigger"""
     print(trigger)  # Add this line
     trigger_dict = {}
 
@@ -74,6 +79,7 @@ def process_trigger(trigger):
 
 
 def process_action(action):
+    """Process an action"""
     action_dict = {}
 
     if 'service' in action:
@@ -84,27 +90,32 @@ def process_action(action):
     return action_dict
 
 
-def correct_yaml_files(directory):
-    for filename in os.listdir(directory):
+def correct_yaml_files(location_of_yaml_files):
+    """Correct the YAML files in the specified directory"""
+    for filename in os.listdir(location_of_yaml_files):
         if filename.endswith(".yaml"):
-            file = os.path.join(directory, filename)
-            with open(file, 'r') as stream:
-                try:
-                    data = stream.read()
-                    # Ensure that the quotes in the alias line are matched correctly
-                    corrected_data = re.sub(r'alias:\s*"([^"]*)\'', r'alias: "\1"', data)
-                    with open(file, 'w') as output_stream:
-                        output_stream.write(corrected_data)
-                    print(f"File '{filename}' corrected.")
-                except Exception as e:
-                    print(f"Error in file '{filename}': {e}")
+            file = os.path.join(location_of_yaml_files, filename)
+            try:
+                with open(file, 'r', encoding='utf-8') as stream:
+                    try:
+                        data = stream.read()
+                        # Ensure that the quotes in the alias line are matched correctly
+                        corrected_data = re.sub(r'alias:\s*"([^"]*)\'', r'alias: "\1"', data)
+                        with open(file, 'w', encoding='utf-8') as output_stream:
+                            output_stream.write(corrected_data)
+                        print(f"File '{filename}' corrected.")
+                    except yaml.YAMLError as yaml_error:
+                        print(f"Error in YAML parsing of file '{filename}': {yaml_error}")
+            except FileNotFoundError as file_not_found_error:
+                print(f"Error opening file '{filename}': {file_not_found_error}")
 
 
 # Error in file 'automation_73.yaml': while parsing a block mapping
 #   in "D:/Code/SEM7/AA_ML/automations/automation_73.yaml", line 1, column 1
 # expected <block end>, but found '<scalar>'
 #   in "D:/Code/SEM7/AA_ML/automations/automation_73.yaml", line 1, column 49
-def prepocess_data(automations):
+def preprocess_data(automations):  # pylint: disable=redefined-outer-name
+    """Preprocess the data"""
     # Initialize the encoders
     platform_encoder = LabelEncoder()
     condition_encoder = LabelEncoder()
@@ -116,13 +127,13 @@ def prepocess_data(automations):
     services = []
 
     # Loop through all the automations
-    for automation in automations:
+    for data in automations:
         # Loop through all the triggers, conditions, and actions
-        for trigger in automation['triggers']:
+        for trigger in data['triggers']:
             platforms.append(trigger['platform'])
-        for condition in automation['conditions']:
+        for condition in data['conditions']:
             conditions.append(condition['condition'])
-        for action in automation['actions']:
+        for action in data['actions']:
             services.append(action['service'])
 
     # Fit and transform the features using the encoders
@@ -132,6 +143,8 @@ def prepocess_data(automations):
 
     return encoded_platforms, encoded_conditions, encoded_services
 
+
+
     # Feature engineering
 
 
@@ -139,7 +152,8 @@ def prepocess_data(automations):
 # input: list of automations
 # output: list of dictionaries
 
-def feature_engineering(automations):
+def feature_engineering(data):
+    """Perform feature engineering"""
     # Initialize lists to store the features
     num_triggers = []
     num_conditions = []
@@ -148,66 +162,69 @@ def feature_engineering(automations):
     has_sunrise_trigger = []
 
     # Loop through all the automations
-    for automation in automations:
+    for automation in data:
         # Extract features
         num_triggers.append(len(automation['triggers']))
         num_conditions.append(len(automation['conditions']))
         num_actions.append(len(automation['actions']))
-        has_state_trigger.append(any(trigger['platform'] == 'state' for trigger in automation['triggers']))
+        has_state_trigger.append(
+            any(trigger['platform'] == 'state' for trigger in automation['triggers']))
         has_sunrise_trigger.append(any(
-            trigger['platform'] == 'sun' and trigger.get('event') == 'sunrise' for trigger in automation['triggers']))
+            trigger['platform'] == 'sun' and trigger.get('event') == 'sunrise' for trigger in
+            automation['triggers']))
 
     # Only show the first 5 values
-    return num_triggers[:5], num_conditions[:5], num_actions[:5], has_state_trigger[:5], has_sunrise_trigger[:5]
+    return (
+        num_triggers[:5],
+        num_conditions[:5],
+        num_actions[:5],
+        has_state_trigger[:5],
+        has_sunrise_trigger[:5],
+    )
 
 
-def data_modeling(automations):
-    class CustomJSONEncoder(json.JSONEncoder):
-        def default(self, obj):
+def data_modeling(automations):  # pylint: disable=too-many-locals, redefined-outer-name
+    """Perform data modeling"""
+    class CustomJSONEncoderPlus(json.JSONEncoder):
+        """Custom JSON encoder"""
+        def default(self, obj):  #pylint: disable=arguments-renamed
             if isinstance(obj, datetime.time):
                 return obj.strftime('%H:%M:%S')
             return super().default(obj)
 
     # Convert your automations into strings
-    # automation_strings = [json.dumps(automation, cls=CustomJSONEncoder) for automation in automations]
-    # Add the '<end>' token to the end of each automation string
-    automation_strings = [json.dumps(automation, cls=CustomJSONEncoder) + ' <end>' for automation in automations]
+    automation_strings = [json.dumps(automation, cls=CustomJSONEncoderPlus) + ' <end>' for automation in automations]
     print(automation_strings[0])
 
     # Initialize the tokenizer
-    tokenizer = Tokenizer(filters='')
+    tokenizer = Tokenizer(filters='')  # pylint: disable=redefined-outer-name
 
     # Fit the tokenizer on your automation strings
     tokenizer.fit_on_texts(automation_strings)
 
-    # Convert your automation strings to sequences of tokens
-    sequences = tokenizer.texts_to_sequences(automation_strings)
-
-    # Pad your sequences so they all have the same length
-    sequences = pad_sequences(sequences, padding='post')
+    # Convert your automation strings to sequences of tokens and pad them
+    sequences = pad_sequences(tokenizer.texts_to_sequences(automation_strings), padding='post')
 
     # Create your input and target sequences
-    X = sequences[:, :-1]
-    y = sequences[:, 1:]
+    input_sequences = sequences[:, :-1]
+    target_sequences = sequences[:, 1:]
 
-    # Define the model
-    model = Sequential()
-    model.add(Embedding(input_dim=len(tokenizer.word_index) + 1, output_dim=64, input_length=X.shape[1]))
+    # Define and compile the model
+    model = Sequential()  # pylint: disable=redefined-outer-name
+    model.add(Embedding(input_dim=len(tokenizer.word_index) + 1, output_dim=64, input_length=input_sequences.shape[1]))
     model.add(LSTM(64, return_sequences=True))
     model.add(Dense(len(tokenizer.word_index) + 1, activation='softmax'))
-
-    # Compile the model
     model.compile(loss='sparse_categorical_crossentropy', optimizer='adam')
 
-    # Reshape y to be 3-dimensional, as the model expects
-    y_reshaped = y.reshape(*y.shape, 1)
+    # Reshape target_sequences to be 3-dimensional, as the model expects
+    target_sequences_reshaped = target_sequences.reshape(*target_sequences.shape, 1)
 
     # Train the model
-    model.fit(X, y_reshaped, epochs=10, validation_split=0.2)
+    model.fit(input_sequences, target_sequences_reshaped, epochs=10, validation_split=0.2)
     model.save('model.h5')
 
     # Save the tokenizer
-    with open('tokenizer.pickle', 'wb') as handle:
+    with open('tokenizer.pickle', 'wb', encoding='utf-8') as handle:  # pylint: disable=redefined-outer-name
         pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     max_length = 20
@@ -218,20 +235,13 @@ def data_modeling(automations):
                      '"entity_id": "light.living_room"}}'
 
     # Convert the start sequence to tokens
-    sequence = tokenizer.texts_to_sequences([start_sequence])[0]
+    sequence = tokenizer.texts_to_sequences([start_sequence])[0]  # pylint: disable=redefined-outer-name
 
     # Pad the sequence
     sequence = pad_sequences([sequence], maxlen=max_length, padding='post')
 
-    # Use the model to predict the next token
-    prediction = model.predict(sequence)
-    predicted_token = np.argmax(prediction[0, -1, :])
-
-    # Add the predicted token to the sequence
-    sequence = np.append(sequence[0], predicted_token)
-
     # Continue predicting tokens until the end token is predicted or the maximum length is reached
-    while predicted_token != tokenizer.word_index['<end>'] and len(sequence) < max_length:
+    while sequence[0][-1] != tokenizer.word_index['<end>'] and len(sequence[0]) < max_length:
         sequence = pad_sequences([sequence], maxlen=max_length, padding='post')
         prediction = model.predict(sequence)
         predicted_token = np.argmax(prediction[0, -1, :])
@@ -244,8 +254,9 @@ def data_modeling(automations):
 
 
 # data modeling
-def run_all_methods(directory):
-    automations = []
+def run_all_methods(directory):  # pylint: disable=redefined-outer-name
+    """Run all methods"""
+    automations = []  # pylint: disable=redefined-outer-name
 
     correct_yaml_files(directory)
 
@@ -258,7 +269,7 @@ def run_all_methods(directory):
             automations.extend(file_automations)
 
     # preprocess_data(automations)
-    print(prepocess_data(automations))
+    print(preprocess_data(automations))
 
     # feature_engineering(automations)
     print(feature_engineering(automations))
@@ -267,6 +278,7 @@ def run_all_methods(directory):
 
 
 def process_condition(condition):
+    """Process a condition"""
     condition_dict = {}
 
     if 'condition' in condition:
@@ -285,9 +297,10 @@ def process_condition(condition):
     return condition_dict
 
 
-def generate_automation(start_sequence, model, tokenizer, max_length=20):
+def generate_automation(start_sequence, model, tokenizer, max_length=20):  # pylint: disable=redefined-outer-name
+    """Generate automations using a model"""
     # Convert the start sequence to tokens
-    sequence = tokenizer.texts_to_sequences([start_sequence])[0]
+    sequence = tokenizer.texts_to_sequences([start_sequence])[0]  # pylint: disable=redefined-outer-name
 
     # Pad the sequence
     sequence = pad_sequences([sequence], maxlen=max_length, padding='post')
@@ -313,14 +326,14 @@ def generate_automation(start_sequence, model, tokenizer, max_length=20):
 
 
 if __name__ == '__main__':
-    directory = 'D:/Code/SEM7/AA_ML/automations/'
-    directory = 'D:/Temp/yaml'
+    # directory = 'D:/Code/SEM7/AA_ML/automations/'
+    directory = 'D:/Temp/yaml'  # pylint: disable=invalid-name
     automations = []
 
-    #correct_yaml_files(directory)
+    # correct_yaml_files(directory)
 
     # loop through all the yaml files in the directory D:/Temp/yaml
-    #for filename in os.listdir(directory):
+    # for filename in os.listdir(directory):
     #    if filename.endswith(".yaml"):
     #        print("Processing file: " + filename)
     #        file = os.path.join(directory, filename)
@@ -328,17 +341,17 @@ if __name__ == '__main__':
     #        automations.extend(file_automations)
 
     # preprocess_data(automations)
-    #print(prepocess_data(automations))
+    # print(prepocess_data(automations))
 
-    #feature_engineering(automations)
-    #print(feature_engineering(automations))
+    # feature_engineering(automations)
+    # print(feature_engineering(automations))
 
-    #print(data_modeling(automations))
+    # print(data_modeling(automations))
 
-    sequence = '{"alias": "Example automation", "trigger": {"platform": "state", "entity_id": "sun.sun", ' \
-                    '"to": "below_horizon"}, "condition": {"condition": "state", "entity_id": ' \
-                    '"device_tracker.person1", "state": "home"}, "action": {"service": "light.turn_on", "target": {' \
-                    '"entity_id": "light.living_room"}}'
+    SEQUENCE = '{"alias": "Example automation", "trigger": {"platform": "state", "entity_id": "sun.sun", ' \
+               '"to": "below_horizon"}, "condition": {"condition": "state", "entity_id": ' \
+               '"device_tracker.person1", "state": "home"}, "action": {"service": "light.turn_on", "target": {' \
+               '"entity_id": "light.living_room"}}'
 
     # Load the tokenizer
     with open('tokenizer.pickle', 'rb') as handle:
@@ -347,5 +360,5 @@ if __name__ == '__main__':
     # Load the model
     model = load_model('model.h5')
 
-    # Convert the start sequence to tokens
-    print(generate_automation(sequence, model, tokenizer))
+    # Convert the start SEQUENCE to tokens
+    print(generate_automation(SEQUENCE, model, tokenizer))

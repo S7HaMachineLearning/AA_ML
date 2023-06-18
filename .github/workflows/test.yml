@@ -32,7 +32,7 @@ jobs:
       - name: Analyzing the code with Pylint
         run: |
           cd src
-          pylint *.py
+          pylint --max-line-length=240 *.py
 
   test:
     runs-on: ubuntu-latest
