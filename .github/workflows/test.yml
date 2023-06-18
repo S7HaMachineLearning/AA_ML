@@ -33,6 +33,7 @@ jobs:
         run: |
           cd src
           pylint --max-line-length=240 *.py
+          echo "::set-output name=pylint-result::$?"
 
   test:
     runs-on: ubuntu-latest
@@ -57,6 +58,15 @@ jobs:
         run: |
           cd src
           python -m unittest discover -s . -p "*_test.py"
+          
+      - name: Display Pylint result
+        run: |
+          if [[ "${{ steps.pylint-analysis.outputs.pylint-result }}" == "0" ]]; then
+            echo "Pylint analysis succeeded"
+          else
+            echo "Pylint analysis failed"
+          fi
+
 
   audit:
     runs-on: ubuntu-latest
