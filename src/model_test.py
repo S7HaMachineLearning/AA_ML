@@ -1,5 +1,6 @@
 """Test the model module."""
 from fastapi.testclient import TestClient
+import unittest
 import main  # import the main module
 
 # I've created a mock MachineLearning class that doesn't load any model or tokenizer and always
