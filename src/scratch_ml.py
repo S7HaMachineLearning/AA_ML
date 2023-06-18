@@ -1,3 +1,4 @@
+# pylint: disable=similar-lines
 """This script is a complete workflow for building a machine learning model to predict the service of an automation in Home Assistant."""
 import os
 import pickle
